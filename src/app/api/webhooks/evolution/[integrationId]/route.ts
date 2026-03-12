@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 
-export async function POST(req: Request, { params }: { params: { integrationId: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ integrationId: string }> }) {
     try {
+        const { integrationId } = await params;
         const body = await req.json();
         // Lógica para procesar el webhook de Evolution de forma modular, sabiendo qué
         // instancia/integración es dueña del evento por el integrationId.
