@@ -1,31 +1,69 @@
 export default function WhatsAppMetaSettings() {
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-6">Configuración de WhatsApp Meta</h2>
-      <div className="space-y-6">
-         <div className="bg-white border p-6 rounded-xl shadow-sm">
-            <h3 className="font-medium mb-4">Credenciales Cloud API</h3>
-            <div className="grid grid-cols-2 gap-4">
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+         <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--text-primary)' }}>Cuentas de WhatsApp Meta</h2>
+         <button style={{ backgroundColor: 'var(--brand-primary)', color: 'white', padding: '10px 20px', borderRadius: 'var(--radius-md)', border: 'none', cursor: 'pointer', fontWeight: 500 }}>+ Nueva App Meta</button>
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+         {/* App Meta 1 */}
+         <div style={{ 
+             backgroundColor: 'var(--bg-card)', 
+             border: '1px solid var(--border-subtle)', 
+             padding: '24px', 
+             borderRadius: 'var(--radius-lg)' 
+         }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
+               <h3 style={{ fontWeight: 600, color: 'var(--text-primary)' }}>App E-Beats Ventas</h3>
+               <span style={{ color: 'var(--brand-success)', fontSize: '13px', fontWeight: 600 }}>Verificada</span>
+            </div>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">App ID</label>
-                  <input type="text" className="w-full border p-2 rounded-lg bg-gray-50 focus:bg-white transition" />
+                  <label style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>App ID</label>
+                  <input type="text" defaultValue="2988067561556366" style={{ 
+                      width: '100%', border: '1px solid var(--border-default)', padding: '10px 14px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', outline: 'none'
+                  }} />
                </div>
                <div>
-                  <label className="text-sm font-medium text-gray-700 block mb-1">App Secret</label>
-                  <input type="password" className="w-full border p-2 rounded-lg bg-gray-50 focus:bg-white transition" />
+                  <label style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Phone Number ID</label>
+                  <input type="text" defaultValue="1068909979635134" style={{ 
+                      width: '100%', border: '1px solid var(--border-default)', padding: '10px 14px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', outline: 'none'
+                  }} />
                </div>
-               <div className="col-span-2">
-                  <label className="text-sm font-medium text-gray-700 block mb-1">Permanent Access Token</label>
-                  <textarea className="w-full border p-2 rounded-lg bg-gray-50 focus:bg-white transition" rows={3}></textarea>
+               <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary)', display: 'block', marginBottom: '6px' }}>Permanent Access Token</label>
+                  <input type="password" defaultValue="EAAqdobGSSY4BQwpVs..." style={{ 
+                      width: '100%', border: '1px solid var(--border-default)', padding: '10px 14px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--bg-elevated)', color: 'var(--text-primary)', outline: 'none'
+                  }} />
                </div>
             </div>
-            <button className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-6 rounded-lg">Probar y Guardar</button>
+            <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+               <button style={{ backgroundColor: 'var(--bg-elevated)', border: '1px solid var(--border-strong)', color: 'var(--text-primary)', fontWeight: 500, padding: '8px 16px', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}>Probar Conexión</button>
+               <button style={{ backgroundColor: 'transparent', color: 'var(--brand-danger)', fontWeight: 500, padding: '8px 16px', border: 'none', cursor: 'pointer' }}>Eliminar</button>
+            </div>
          </div>
 
-         <div className="bg-indigo-50 text-indigo-900 border border-indigo-200 p-6 rounded-xl shadow-sm">
-            <h3 className="font-medium mb-2">Webhook URL Configurada</h3>
-            <code className="bg-white px-4 py-2 rounded-lg block text-sm mb-4">https://tu-dominio.com/api/webhooks/whatsapp/meta</code>
-            <p className="text-sm mb-4">Asegúrate de configurar esta URL en el panel de desarrolladores de Meta.</p>
+         <div style={{ 
+             backgroundColor: 'rgba(99, 102, 241, 0.05)', 
+             border: '1px solid rgba(99, 102, 241, 0.2)', 
+             padding: '24px', 
+             borderRadius: 'var(--radius-lg)' 
+         }}>
+            <h3 style={{ fontWeight: 600, color: 'var(--brand-secondary)', marginBottom: '8px' }}>Webhook Global para Meta</h3>
+            <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '16px' }}>Pega esta URL exacta en el panel de todos tus perfiles de Meta Cloud API.</p>
+            
+            <code style={{ 
+                backgroundColor: 'var(--bg-elevated)', 
+                padding: '12px 16px', 
+                borderRadius: 'var(--radius-md)', 
+                display: 'block', 
+                fontSize: '14px', 
+                fontFamily: 'monospace', 
+                color: 'var(--brand-primary)',
+                border: '1px dashed var(--border-strong)'
+            }}>https://aimachristian-crm.ajcxjb.easypanel.host/api/webhooks/whatsapp/meta</code>
          </div>
       </div>
     </div>

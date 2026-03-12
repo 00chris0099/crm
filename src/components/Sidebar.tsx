@@ -12,6 +12,7 @@ import {
     MessageCircle,
 } from 'lucide-react';
 import { ViewType } from '@/app/page';
+import Link from 'next/link';
 
 interface SidebarProps {
     activeView: ViewType;
@@ -69,9 +70,11 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
                     </div>
                 </div>
                 <div className="tooltip-wrap">
-                    <button className="sidebar-btn" aria-label="Configuración">
-                        <Settings size={20} strokeWidth={1.8} />
-                    </button>
+                    <Link href="/settings">
+                        <button className="sidebar-btn" aria-label="Configuración">
+                            <Settings size={20} strokeWidth={1.8} />
+                        </button>
+                    </Link>
                     <div className="tooltip" style={{ left: '120%', top: '50%', transform: 'translateY(-50%)' }}>
                         Configuración
                     </div>

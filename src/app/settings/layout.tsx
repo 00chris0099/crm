@@ -19,24 +19,60 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
   ];
 
   return (
-    <div className="flex bg-gray-50 min-h-screen text-gray-900">
-      <div className="w-64 bg-white border-r border-gray-200 shadow-sm flex flex-col h-screen fixed">
-        <div className="p-6 border-b border-gray-100">
-           <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Configuración</h1>
-           <p className="text-sm text-gray-400 mt-1">Plataforma de Integración</p>
+    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: 'var(--bg-base)', color: 'var(--text-primary)', fontFamily: 'var(--font-inter)' }}>
+      {/* Sidebar de Configuración */}
+      <div style={{ 
+        width: '260px', 
+        backgroundColor: 'var(--bg-surface)', 
+        borderRight: '1px solid var(--border-subtle)', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        height: '100vh', 
+        position: 'fixed' 
+      }}>
+        <div style={{ padding: '24px', borderBottom: '1px solid var(--border-subtle)' }}>
+           <h1 style={{ 
+               fontSize: '20px', 
+               fontWeight: 'bold', 
+               background: 'linear-gradient(90deg, var(--brand-primary), var(--brand-secondary))', 
+               WebkitBackgroundClip: 'text', 
+               WebkitTextFillColor: 'transparent',
+               margin: 0
+           }}>Configuración</h1>
+           <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>Plataforma de Integración</p>
         </div>
-        <nav className="flex-1 overflow-y-auto p-4 space-y-1">
-          {links.map(l => (
-            <Link key={l.href} href={l.href}>
-              <div className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${pathname === l.href ? 'bg-indigo-50 text-indigo-700 shadow-sm' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
-                {l.label}
-              </div>
-            </Link>
-          ))}
+        <nav style={{ flex: 1, overflowY: 'auto', padding: '16px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          {links.map(l => {
+            const isActive = pathname === l.href;
+            return (
+              <Link key={l.href} href={l.href} style={{ textDecoration: 'none' }}>
+                <div style={{ 
+                    padding: '10px 16px', 
+                    borderRadius: 'var(--radius-md)', 
+                    fontSize: '14px', 
+                    fontWeight: 500, 
+                    transition: 'all var(--transition-fast)',
+                    backgroundColor: isActive ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+                    color: isActive ? 'var(--brand-primary)' : 'var(--text-secondary)',
+                    borderLeft: isActive ? '3px solid var(--brand-primary)' : '3px solid transparent'
+                }}
+                onMouseOver={(e) => { if (!isActive) { e.currentTarget.style.backgroundColor = 'var(--bg-hover)'; e.currentTarget.style.color = 'var(--text-primary)' } }}
+                onMouseOut={(e) => { if (!isActive) { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)' } }}
+                >
+                  {l.label}
+                </div>
+              </Link>
+            )
+          })}
         </nav>
       </div>
-      <div className="flex-1 p-8 ml-64 overflow-y-auto max-h-screen">
-        <div className="max-w-5xl mx-auto backdrop-blur-sm bg-white/50 border border-gray-100 p-8 rounded-2xl shadow-xl">
+
+      {/* Contenido Principal */}
+      <div style={{ flex: 1, marginLeft: '260px', padding: '40px', overflowY: 'auto', maxHeight: '100vh' }}>
+        <div style={{ 
+            maxWidth: '900px', 
+            margin: '0 auto', 
+        }}>
            {children}
         </div>
       </div>

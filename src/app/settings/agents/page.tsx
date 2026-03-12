@@ -1,32 +1,33 @@
 export default function AgentsSettings() {
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-6">Configuración de Agentes IA</h2>
-      <div className="flex justify-end mb-4">
-         <button className="bg-indigo-600 text-white px-4 py-2 rounded-lg font-medium">+ Nuevo Agente</button>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: 'var(--text-primary)' }}>Agentes IA</h2>
+          <button style={{ backgroundColor: 'var(--brand-primary)', color: 'white', padding: '10px 20px', borderRadius: 'var(--radius-md)', border: 'none', cursor: 'pointer', fontWeight: 500 }}>+ Nuevo Agente</button>
       </div>
-      <div className="overflow-x-auto border rounded-xl bg-white shadow-sm">
-         <table className="w-full text-left text-sm">
-            <thead className="bg-gray-50 border-b">
-               <tr>
-                  <th className="p-4 font-medium text-gray-500">Nombre</th>
-                  <th className="p-4 font-medium text-gray-500">Tipo</th>
-                  <th className="p-4 font-medium text-gray-500">Estado</th>
-                  <th className="p-4 font-medium text-gray-500">Acciones</th>
+
+      <div style={{ backgroundColor: 'var(--bg-card)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' }}>
+         <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
+            <thead>
+               <tr style={{ backgroundColor: 'var(--bg-elevated)', borderBottom: '1px solid var(--border-subtle)' }}>
+                  <th style={{ padding: '16px', fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600 }}>Nombre</th>
+                  <th style={{ padding: '16px', fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600 }}>Rol / Tipo</th>
+                  <th style={{ padding: '16px', fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600 }}>Estado</th>
+                  <th style={{ padding: '16px', fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600 }}>Acciones</th>
                </tr>
             </thead>
             <tbody>
-               <tr className="border-b hover:bg-gray-50">
-                  <td className="p-4 font-medium">Sales Assistant Pro</td>
-                  <td className="p-4"><span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Ventas</span></td>
-                  <td className="p-4"><span className="text-green-600 font-medium">Activo</span></td>
-                  <td className="p-4"><button className="text-indigo-600 underline">Editar</button></td>
+               <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                  <td style={{ padding: '16px', fontWeight: 500, color: 'var(--text-primary)' }}>Sales Assistant Pro</td>
+                  <td style={{ padding: '16px' }}><span style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)', color: 'var(--brand-primary)', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 600 }}>Ventas</span></td>
+                  <td style={{ padding: '16px' }}><span style={{ color: 'var(--brand-success)', fontWeight: 600, fontSize: '13px' }}>Activo</span></td>
+                  <td style={{ padding: '16px' }}><button style={{ background: 'none', border: 'none', color: 'var(--brand-primary)', cursor: 'pointer', textDecoration: 'underline' }}>Configurar</button></td>
                </tr>
-               <tr className="hover:bg-gray-50">
-                  <td className="p-4 font-medium">Support Bot v1</td>
-                  <td className="p-4"><span className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">Soporte</span></td>
-                  <td className="p-4"><span className="text-gray-400 font-medium">Inactivo</span></td>
-                  <td className="p-4"><button className="text-indigo-600 underline">Editar</button></td>
+               <tr>
+                  <td style={{ padding: '16px', fontWeight: 500, color: 'var(--text-disabled)' }}>Support Bot v1</td>
+                  <td style={{ padding: '16px' }}><span style={{ backgroundColor: 'var(--bg-elevated)', color: 'var(--text-muted)', padding: '4px 10px', borderRadius: '6px', fontSize: '12px', fontWeight: 600 }}>Soporte</span></td>
+                  <td style={{ padding: '16px' }}><span style={{ color: 'var(--text-disabled)', fontWeight: 600, fontSize: '13px' }}>Inactivo</span></td>
+                  <td style={{ padding: '16px' }}><button style={{ background: 'none', border: 'none', color: 'var(--brand-primary)', cursor: 'pointer', textDecoration: 'underline' }}>Configurar</button></td>
                </tr>
             </tbody>
          </table>
