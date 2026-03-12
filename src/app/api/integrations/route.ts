@@ -86,7 +86,7 @@ export async function POST(req: Request) {
                             access_token: appToken,
                             object: 'whatsapp_business_account',
                             callback_url: webhookUrl,
-                            verify_token: verifyToken,
+                            verify_token: verify_token,
                             fields: ['messages', 'message_echoes', 'message_statuses']
                         })
                     });
