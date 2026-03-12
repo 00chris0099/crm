@@ -26,7 +26,7 @@ const navItems = [
     { id: 'channels' as ViewType, href: '/channels', icon: MessageCircle, label: 'Canales' },
     { id: 'automations' as ViewType, href: '/automations', icon: Zap, label: 'Automatizaciones' },
     { id: 'agents' as ViewType, href: '/agents', icon: Users, label: 'Agentes AI' },
-    { id: 'routing' as ViewType, href: '/routing', icon: Database, label: 'Ruteo' }
+    { id: 'routing' as ViewType, href: '/routing', icon: Database, label: 'Base de Datos' }
 ];
 
 export default function Sidebar() {

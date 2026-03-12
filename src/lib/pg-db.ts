@@ -74,6 +74,11 @@ export async function dbQuery<T extends QueryResultRow = QueryResultRow>(
 export async function testConnection(
     dbId: string
 ): Promise<{ ok: boolean; error?: string; version?: string }> {
+    // If no URL is configured, report as disconnected without crashing
+    const config = DATABASES.find((d) => d.id === dbId);
+    if (!config?.url) {
+        return { ok: false, error: `No URL configurada para "${dbId}". Revisa tu .env.local` };
+    }
     try {
         const result = await dbQuery(dbId, 'SELECT version() AS v');
         return { ok: true, version: String(result.rows[0]?.v ?? '') };
