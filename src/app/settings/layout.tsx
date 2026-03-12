@@ -8,6 +8,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
 
   const links = [
     { label: "General", href: "/settings" },
+    { label: "Integraciones", href: "/settings/integrations" },
     { label: "Agentes IA (Conexiones)", href: "/settings/agents" },
     { label: "Seguridad y Webhooks", href: "/settings/security" }
   ];
