@@ -8,14 +8,8 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
 
   const links = [
     { label: "General", href: "/settings" },
-    { label: "Canales", href: "/settings/channels" },
-    { label: "WhatsApp Meta", href: "/settings/whatsapp-meta" },
-    { label: "Evolution API", href: "/settings/evolution" },
-    { label: "n8n / Automatización", href: "/settings/automation" },
-    { label: "Agentes IA", href: "/settings/agents" },
-    { label: "Webhooks", href: "/settings/webhooks" },
-    { label: "Seguridad", href: "/settings/security" },
-    { label: "Estado", href: "/settings/status" },
+    { label: "Agentes IA (Conexiones)", href: "/settings/agents" },
+    { label: "Seguridad y Webhooks", href: "/settings/security" }
   ];
 
   return (
