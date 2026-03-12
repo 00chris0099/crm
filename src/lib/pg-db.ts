@@ -23,6 +23,13 @@ export const DATABASES: DatabaseConfig[] = [
         color: '#f59e0b',
         description: 'Base de datos de automatizaciones n8n',
     },
+    {
+        id: 'globaldb',
+        name: 'Omnichannel Database',
+        url: process.env.GLOBAL_DATABASE_URL ?? 'postgres://postgres:Mineria99*@aimachristian_db_n8n:5432/globaldb?sslmode=disable',
+        color: '#10b981',
+        description: 'Base de datos principal para el CRM y múltiples canales de automatización',
+    },
 ];
 
 // Pool cache — one pool per database

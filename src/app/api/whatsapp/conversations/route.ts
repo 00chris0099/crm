@@ -22,77 +22,51 @@ export async function GET(req: NextRequest) {
     const offset = (page - 1) * pageSize;
 
     try {
-        // 1. Fetch all unique sessions from n8n
-        const sessionsResult = await dbQuery<{
-            session_id: string;
-            message_count: number;
-            first_id: number;
-            last_id: number;
-            last_content: string;
-            last_type: string;
-        }>(
-            'n8n_data',
-            `SELECT
-         session_id,
-         COUNT(*) AS message_count,
-         MIN(id) AS first_id,
-         MAX(id) AS last_id,
-         (SELECT message->>'content' FROM n8n_chat_histories h2 WHERE h2.session_id = h1.session_id ORDER BY id DESC LIMIT 1) AS last_content,
-         (SELECT message->>'type' FROM n8n_chat_histories h2 WHERE h2.session_id = h1.session_id ORDER BY id DESC LIMIT 1) AS last_type
-       FROM n8n_chat_histories h1
-       GROUP BY session_id`
-        );
-
-        // 2. Group by extracted Phone Number
-        const phoneMap = new Map<string, any>();
-
-        for (const row of sessionsResult.rows) {
-            const phoneId = extractPhone(row.session_id) || row.session_id; // Fallback to raw ID if no phone
-
-            if (!phoneMap.has(phoneId)) {
-                phoneMap.set(phoneId, {
-                    session_id: phoneId, // Use phone as the new global session_id!
-                    real_sessions: [],
-                    message_count: 0,
-                    first_id: Infinity,
-                    last_id: -Infinity,
-                    last_content: '',
-                    last_type: ''
-                });
-            }
-
-            const group = phoneMap.get(phoneId);
-            group.real_sessions.push(row.session_id);
-            group.message_count += Number(row.message_count);
-
-            if (Number(row.first_id) < group.first_id) group.first_id = Number(row.first_id);
-            if (Number(row.last_id) > group.last_id) {
-                group.last_id = Number(row.last_id);
-                group.last_content = row.last_content;
-                group.last_type = row.last_type;
-            }
-        }
-
-        let conversations = Array.from(phoneMap.values());
-
-        // 3. Sort by most recent message (last_id DESC)
-        conversations.sort((a, b) => b.last_id - a.last_id);
-
-        // 4. Client-side search (since we aggregated in JS)
+        let condition = '';
+        let params: any[] = [];
         if (search) {
-            const q = search.toLowerCase();
-            conversations = conversations.filter(c =>
-                c.session_id.toLowerCase().includes(q) ||
-                (c.last_content || '').toLowerCase().includes(q)
-            );
+            condition = 'WHERE c.phone ILIKE $1 OR c.name ILIKE $1';
+            params.push(`%${search}%`);
         }
 
-        // 5. Paginate
-        const total = conversations.length;
-        const paginated = conversations.slice(offset, offset + pageSize);
+        // Query the new globaldb schema
+        const query = `
+            SELECT 
+                c.phone AS session_id,
+                (SELECT COUNT(*) FROM conversation_messages m WHERE m.conversation_id = conv.id) AS message_count,
+                conv.created_at AS first_id,
+                conv.updated_at AS last_id,
+                (SELECT message_text FROM conversation_messages m WHERE m.conversation_id = conv.id ORDER BY created_at DESC LIMIT 1) AS last_content,
+                (SELECT direction FROM conversation_messages m WHERE m.conversation_id = conv.id ORDER BY created_at DESC LIMIT 1) AS last_direction
+            FROM conversations conv
+            JOIN contacts c ON conv.contact_id = c.id
+            ${condition}
+            ORDER BY conv.updated_at DESC
+            LIMIT $${params.length + 1} OFFSET $${params.length + 2}
+        `;
+
+        const sessionsResult = await dbQuery('globaldb', query, [...params, pageSize, offset]);
+
+        const countQuery = `
+            SELECT COUNT(*) AS total
+            FROM conversations conv
+            JOIN contacts c ON conv.contact_id = c.id
+            ${condition}
+        `;
+        const countResult = await dbQuery('globaldb', countQuery, params);
+        const total = Number(countResult.rows[0]?.total || 0);
+
+        const conversations = sessionsResult.rows.map(row => ({
+            session_id: row.session_id,
+            message_count: Number(row.message_count),
+            first_id: new Date(row.first_id).getTime(),
+            last_id: new Date(row.last_id).getTime(),
+            last_content: row.last_content || '',
+            last_type: row.last_direction === 'inbound' ? 'human' : 'ai'
+        }));
 
         return NextResponse.json({
-            conversations: paginated,
+            conversations,
             total,
             page,
             pageSize,

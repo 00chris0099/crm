@@ -26,58 +26,49 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        // 1. Find all raw n8n session_ids that match this phone number
-        const allIdsResult = await dbQuery<{ session_id: string }>('n8n_data', 'SELECT DISTINCT session_id FROM n8n_chat_histories');
-
-        const targetSessionIds = allIdsResult.rows
-            .map(r => r.session_id)
-            .filter(sid => (extractPhone(sid) || sid) === requestSessionId);
-
-        // Also include the raw requestSessionId just in case
-        if (!targetSessionIds.includes(requestSessionId)) {
-            targetSessionIds.push(requestSessionId);
-        }
-
-        // 2. Fetch all messages matching any of these underlying wamid sessions
+        // Query messages from globaldb by joining with conversations and contacts
         const result = await dbQuery<{
-            id: number;
-            session_id: string;
-            message: Record<string, unknown>;
+            id: string; // uuid
+            provider_message_id: string;
+            direction: 'inbound' | 'outbound';
+            message_type: string;
+            message_text: string | null;
+            media_url: string | null;
+            created_at: Date;
         }>(
-            'n8n_data',
-            `SELECT id, session_id, message
-       FROM n8n_chat_histories
-       WHERE session_id = ANY($1)
-       ORDER BY id ASC
-       LIMIT $2 OFFSET $3`,
-            [targetSessionIds, pageSize, offset]
+            'globaldb',
+            `SELECT m.id, m.provider_message_id, m.direction, m.message_type, m.message_text, m.media_url, m.created_at
+             FROM conversation_messages m
+             JOIN conversations conv ON m.conversation_id = conv.id
+             JOIN contacts c ON conv.contact_id = c.id
+             WHERE c.phone = $1
+             ORDER BY m.created_at ASC
+             LIMIT $2 OFFSET $3`,
+            [requestSessionId, pageSize, offset]
         );
 
         const countResult = await dbQuery<{ total: string }>(
-            'n8n_data',
-            `SELECT COUNT(*) AS total FROM n8n_chat_histories WHERE session_id = ANY($1)`,
-            [targetSessionIds]
+            'globaldb',
+            `SELECT COUNT(*) AS total
+             FROM conversation_messages m
+             JOIN conversations conv ON m.conversation_id = conv.id
+             JOIN contacts c ON conv.contact_id = c.id
+             WHERE c.phone = $1`,
+            [requestSessionId]
         );
 
-        // 3. Normalize to clean message structure
+        // Normalize to the structure the frontend expects
         const messages = result.rows.map((row) => {
-            const msg = row.message as Record<string, unknown>;
-            const rawType = (msg.type as string) ?? 'unknown';
-
-            // Anything not strictly 'human' is agent/system
-            const role: 'user' | 'ai' | 'system' =
-                rawType === 'human' ? 'user'
-                    : rawType === 'ai' ? 'ai'
-                        : 'system';
+            const role: 'user' | 'ai' | 'system' = row.direction === 'inbound' ? 'user' : 'ai';
 
             return {
-                id: row.id,
-                session_id: row.session_id,
+                id: row.id, // Using the uuid as ID (the frontend might treat it as string if it tolerates it or keep it as ID)
+                session_id: requestSessionId, // Used by the frontend avatar clustering
                 role,
-                content: (msg.content as string) ?? '',
-                raw_type: rawType,
-                tool_calls: (msg.tool_calls as unknown[]) ?? [],
-                additional_kwargs: (msg.additional_kwargs as Record<string, unknown>) ?? {},
+                content: row.message_text || '',
+                raw_type: row.message_type,
+                tool_calls: [],
+                additional_kwargs: { provider_message_id: row.provider_message_id, media_url: row.media_url },
             };
         });
 
