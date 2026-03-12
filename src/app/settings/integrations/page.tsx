@@ -23,6 +23,8 @@ export default function IntegrationsSettings() {
     // Meta specific
     const [phoneId, setPhoneId] = useState('');
     const [wabaId, setWabaId] = useState('');
+    const [appId, setAppId] = useState('');
+    const [appSecret, setAppSecret] = useState('');
     const [accessToken, setAccessToken] = useState('');
     const [verifyToken, setVerifyToken] = useState('');
     // Evolution specific
@@ -61,6 +63,8 @@ export default function IntegrationsSettings() {
         let config: any = {};
         if (selectedType === 'META') {
             config = {
+                app_id: appId,
+                app_secret: appSecret,
                 phone_number_id: phoneId,
                 whatsapp_business_account_id: wabaId,
                 access_token: accessToken,
@@ -113,6 +117,8 @@ export default function IntegrationsSettings() {
 
     const resetForm = () => {
         setIntegrationName('');
+        setAppId('');
+        setAppSecret('');
         setPhoneId('');
         setWabaId('');
         setAccessToken('');
@@ -256,6 +262,14 @@ export default function IntegrationsSettings() {
                             {selectedType === 'META' && (
                                 <>
                                     <div>
+                                        <label style={{ display: 'block', fontSize: '13px', marginBottom: '8px' }}>App ID</label>
+                                        <input type="text" value={appId} onChange={e => setAppId(e.target.value)} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', backgroundColor: 'var(--bg-elevated)' }} />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '13px', marginBottom: '8px' }}>App Secret</label>
+                                        <input type="password" value={appSecret} onChange={e => setAppSecret(e.target.value)} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', backgroundColor: 'var(--bg-elevated)' }} />
+                                    </div>
+                                    <div>
                                         <label style={{ display: 'block', fontSize: '13px', marginBottom: '8px' }}>Phone Number ID</label>
                                         <input type="text" value={phoneId} onChange={e => setPhoneId(e.target.value)} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', backgroundColor: 'var(--bg-elevated)' }} />
                                     </div>
@@ -302,8 +316,8 @@ export default function IntegrationsSettings() {
                                         <input type="password" value={authToken} onChange={e => setAuthToken(e.target.value)} style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', backgroundColor: 'var(--bg-elevated)' }} />
                                     </div>
                                     <div>
-                                        <label style={{ display: 'block', fontSize: '13px', marginBottom: '8px' }}>Twilio Phone Number</label>
-                                        <input type="text" value={twilioPhone} onChange={e => setTwilioPhone(e.target.value)} placeholder="+1234567890" style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', backgroundColor: 'var(--bg-elevated)' }} />
+                                        <label style={{ display: 'block', fontSize: '13px', marginBottom: '8px' }}>Phone Number SID (PN... o HX...)</label>
+                                        <input type="text" value={twilioPhone} onChange={e => setTwilioPhone(e.target.value)} placeholder="Ej: PN1234567890abcdef" style={{ width: '100%', padding: '10px 14px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-default)', backgroundColor: 'var(--bg-elevated)' }} />
                                     </div>
                                 </>
                             )}
