@@ -1,60 +1,49 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { dbQuery } from '@/lib/pg-db';
 
-const DB_ID = 'globaldb';
-
-export async function GET(request: NextRequest) {
+export async function GET(req: Request) {
     try {
-        const { searchParams } = new URL(request.url);
-        const search = searchParams.get('search') || '';
-        const limit = parseInt(searchParams.get('limit') || '50');
-        const offset = parseInt(searchParams.get('offset') || '0');
-
-        let conversations: any[] = [];
-        let total = 0;
-
-        try {
-            // Simplified query mapping to what we suspect is in globaldb
-            const query = `
-                SELECT 
-                    c.id, c.status, c.created_at, c.updated_at as last_message_at,
-                    ct.name as contact_name, ct.phone as contact_phone
-                FROM conversations c
-                LEFT JOIN contacts ct ON c.contact_id = ct.id
-                ORDER BY c.updated_at DESC
-                LIMIT $1 OFFSET $2
-            `;
-            const result = await dbQuery(DB_ID, query, [String(limit), String(offset)]);
-            
-            conversations = result.rows.map(r => ({
-                id: r.id,
-                contact_id: null,
-                status: r.status || 'closed',
-                last_message: 'No disponible',
-                last_message_at: r.last_message_at,
-                unread_count: 0,
-                contact_name: r.contact_name || 'Desconocido',
-                contact_phone: r.contact_phone || '',
-                contact_avatar_color: '#6366f1',
-                contact_lead_status: 'frio',
-                contact_company: '',
-                assigned_agent: 'AI Agent'
-            }));
-
-            const countRes = await dbQuery(DB_ID, 'SELECT COUNT(*) as c FROM conversations');
-            total = Number(countRes.rows[0]?.c || 0);
-
-        } catch (dbErr) {
-            console.error('Info: Conversations tables missing or schema mismatch in globaldb:', dbErr);
+        const url = new URL(req.url);
+        const search = url.searchParams.get('search');
+        
+        // Check for active integrations first
+        const integrationsResult = await dbQuery('crm_db', 'SELECT count(*) as count FROM integrations WHERE active = $1', [true]);
+        const count = parseInt(integrationsResult.rows[0].count);
+        
+        if (count === 0) {
+            return NextResponse.json({ conversations: [], noActiveIntegrations: true });
         }
 
-        return NextResponse.json({ conversations, total, limit, offset });
-    } catch (error) {
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-    }
-}
+        // Fetch conversations
+        let query = `
+            SELECT 
+                c.id, 
+                c.status,
+                c.created_at,
+                co.name as contact_name,
+                co.phone as contact_phone,
+                co.attributes as contact_attributes,
+                (SELECT content FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) as last_message,
+                (SELECT created_at FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) as last_message_at,
+                (SELECT count(*) FROM messages m WHERE m.conversation_id = c.id AND m.sender_type = 'user') as unread_count
+            FROM conversations c
+            JOIN contacts co ON c.contact_id = co.id
+        `;
+        
+        const params: any[] = [];
+        
+        if (search) {
+            query += ` WHERE co.name ILIKE $1 OR co.phone ILIKE $1`;
+            params.push(`%${search}%`);
+        }
+        
+        query += ` ORDER BY COALESCE((SELECT created_at FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1), c.created_at) DESC`;
 
-export async function POST(request: NextRequest) {
-    // Retain a simplified creation mechanism for testing if needed
-    return NextResponse.json({ error: 'Not fully adapted to PG yet' }, { status: 501 });
+        const result = await dbQuery('crm_db', query, params);
+        
+        return NextResponse.json({ conversations: result.rows, noActiveIntegrations: false });
+    } catch (error) {
+        console.error('Error fetching conversations:', error);
+        return NextResponse.json({ error: 'Failed to fetch conversations' }, { status: 500 });
+    }
 }

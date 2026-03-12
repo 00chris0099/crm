@@ -84,6 +84,7 @@ export default function ConversationsView() {
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
     const [showDetails, setShowDetails] = useState(true);
+    const [noIntegrations, setNoIntegrations] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -94,7 +95,13 @@ export default function ConversationsView() {
             if (filter !== 'all') params.set('status', filter);
             const res = await fetch(`/api/conversations?${params}`);
             const json = await res.json();
-            setConversations(json.conversations || []);
+            if (json.noActiveIntegrations) {
+                setNoIntegrations(true);
+                setConversations([]);
+            } else {
+                setNoIntegrations(false);
+                setConversations(json.conversations || []);
+            }
         } finally {
             setLoading(false);
         }
@@ -226,6 +233,10 @@ export default function ConversationsView() {
                     {loading ? (
                         <div style={{ padding: '24px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
                             Cargando...
+                        </div>
+                    ) : noIntegrations ? (
+                        <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px', fontWeight: 'bold' }}>
+                            No hay integraciones conectadas
                         </div>
                     ) : filteredConversations.length === 0 ? (
                         <div style={{ padding: '32px 16px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '13px' }}>
