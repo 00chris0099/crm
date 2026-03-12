@@ -20,7 +20,7 @@ export class MessageNormalizationService {
                     message_type: this.mapMetaType(msg.type),
                     text: msg.text?.body || '',
                     timestamp: msg.timestamp,
-                    raw_payload: msg
+                    raw_payload: payload
                 });
             }
           }
