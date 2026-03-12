@@ -25,12 +25,5 @@ export default function CRMPage() {
         }
     };
 
-    return (
-        <div className="crm-layout">
-            <Sidebar activeView={activeView} onNavigate={setActiveView} />
-            <div className="main-content">
-                {renderView()}
-            </div>
-        </div>
-    );
+    return renderView();
 }

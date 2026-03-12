@@ -15,23 +15,23 @@ import { ViewType } from '@/app/page';
 import Link from 'next/link';
 
 interface SidebarProps {
-    activeView: ViewType;
-    onNavigate: (view: ViewType) => void;
+    activeView?: ViewType;
+    onNavigate?: (view: ViewType) => void;
 }
 
 const navItems = [
-    { id: 'dashboard' as ViewType, icon: LayoutDashboard, label: 'Dashboard' },
-    { id: 'conversations' as ViewType, icon: MessageSquare, label: 'Conversaciones' },
-    { id: 'contacts' as ViewType, icon: Users, label: 'Contactos' },
-    { id: 'analytics' as ViewType, icon: BarChart3, label: 'Analítica' },
-    { id: 'database' as ViewType, icon: Database, label: 'Database Admin' },
-    { id: 'whatsapp' as ViewType, icon: MessageCircle, label: 'WhatsApp Monitor' },
+    { id: 'dashboard' as ViewType, href: '/', icon: LayoutDashboard, label: 'Dashboard' },
+    { id: 'conversations' as ViewType, href: '/inbox', icon: MessageSquare, label: 'Inbox / Chats' },
+    { id: 'integrations' as ViewType, href: '/integrations', icon: Settings, label: 'Integraciones' },
+    { id: 'channels' as ViewType, href: '/channels', icon: MessageCircle, label: 'Canales' },
+    { id: 'automations' as ViewType, href: '/automations', icon: Zap, label: 'Automatizaciones' },
+    { id: 'agents' as ViewType, href: '/agents', icon: Users, label: 'Agentes AI' },
+    { id: 'routing' as ViewType, href: '/routing', icon: Database, label: 'Ruteo' }
 ];
 
-export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
+export default function Sidebar() {
     return (
         <div className="sidebar">
-            {/* Logo */}
             <div className="sidebar-logo" title="E Beats Perú CRM">
                 <Zap size={18} strokeWidth={2.5} />
             </div>
@@ -40,13 +40,14 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
             <nav className="sidebar-nav">
                 {navItems.map((item) => (
                     <div key={item.id} className="tooltip-wrap">
-                        <button
-                            className={`sidebar-btn ${activeView === item.id ? 'active' : ''}`}
-                            onClick={() => onNavigate(item.id)}
-                            aria-label={item.label}
-                        >
-                            <item.icon size={20} strokeWidth={1.8} />
-                        </button>
+                        <Link href={item.href || '/'}>
+                            <button
+                                className={`sidebar-btn`}
+                                aria-label={item.label}
+                            >
+                                <item.icon size={20} strokeWidth={1.8} />
+                            </button>
+                        </Link>
                         <div className="tooltip" style={{ left: '120%', top: '50%', transform: 'translateY(-50%)' }}>
                             {item.label}
                         </div>
@@ -69,17 +70,6 @@ export default function Sidebar({ activeView, onNavigate }: SidebarProps) {
                         Notificaciones
                     </div>
                 </div>
-                <div className="tooltip-wrap">
-                    <Link href="/settings">
-                        <button className="sidebar-btn" aria-label="Configuración">
-                            <Settings size={20} strokeWidth={1.8} />
-                        </button>
-                    </Link>
-                    <div className="tooltip" style={{ left: '120%', top: '50%', transform: 'translateY(-50%)' }}>
-                        Configuración
-                    </div>
-                </div>
-
                 <div style={{ marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
                     <div className="user-avatar" title="Admin">A</div>
                 </div>
